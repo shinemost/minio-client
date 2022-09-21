@@ -2,9 +2,16 @@ package api
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"os"
 
 	"github.com/minio/minio-go/v6"
+)
+
+const (
+	TEST_BUCKET = "xfchen"
+	TEST_OBJECT = "xxxx/yyyyy/工商学院风控系统.pdma.json"
 )
 
 type C struct {
@@ -64,12 +71,30 @@ func (c C) ListBucketObjects(bucketName string) {
 	defer close(doneCh)
 
 	isRecursive := true
-	objectCh := c.Client.ListObjects(bucketName, "", isRecursive, doneCh)
+	objectCh := c.Client.ListObjectsV2(bucketName, "", isRecursive, doneCh)
 	for object := range objectCh {
 		if object.Err != nil {
 			fmt.Println(object.Err)
 			return
+
 		}
 		fmt.Println(object)
+	}
+}
+
+func (c C) GetObject(bucketName string) {
+	object, err := c.Client.GetObject(TEST_BUCKET, TEST_OBJECT, minio.GetObjectOptions{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	localFile, err := os.Create(".\\local-file.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if _, err = io.Copy(localFile, object); err != nil {
+		fmt.Println(err)
+		return
 	}
 }

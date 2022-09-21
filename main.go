@@ -29,9 +29,10 @@ func main() {
 		Client: *minioClient,
 	}
 
-	c.ListBuckets()
+	// c.ListBuckets()
 	bucketName := c.CreateBucket("xfchen")
-	c.FileUpload(bucketName)
+	// c.FileUpload(bucketName)
 	c.ListBucketObjects(bucketName)
+	c.GetObject("")
 
 }
